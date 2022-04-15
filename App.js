@@ -6,7 +6,9 @@ import {
   ScrollView,
   StyleSheet,
   Button,
+  TouchableOpacity,
   Platform,
+  Dimensions, 
 } from 'react-native';
 import {Camera} from 'expo-camera';
 
@@ -17,6 +19,8 @@ import {cameraWithTensors} from '@tensorflow/tfjs-react-native';
 
 
 export default function App() {
+
+  
   
   const [predictionClass, setPredictionClass] = useState('');
   const [predictionFound, setPredictionFound] = useState(false);
@@ -49,7 +53,7 @@ export default function App() {
 
         //load the mobilenet model and save it in state
         setMobilenetModel(await loadMobileNetModel());
-
+        
         setFrameworkReady(true);
       })();
     }
@@ -113,10 +117,11 @@ export default function App() {
             <ScrollView style={{height: 400}}>
               <Text style={styles.wordTextField}>{predictionClass}</Text>
             </ScrollView>
-            <Button
-              title="Check new predictions"
+            <TouchableOpacity style={styles.btn}
               onPress={() => loadNewPrediction()}
-            />
+            >
+            <Text style={styles.btnText}>Check new predictions</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <ActivityIndicator size="large" />
@@ -127,9 +132,6 @@ export default function App() {
   const renderCameraView = () => {
     return (
       <View style={styles.cameraView}>
-        <Text style={styles.legendTextField}>
-          Point to any object and get its label
-        </Text>
         <TensorCamera
           style={styles.camera}
           type={Camera.Constants.Type.back}
@@ -142,6 +144,9 @@ export default function App() {
           onReady={imageAsTensors => handleCameraStream(imageAsTensors)}
           autorender={true}
         />
+        <Text style={styles.legendTextField}>
+          Point to any object and get its label
+        </Text>
         
       </View>
     );
@@ -155,7 +160,7 @@ export default function App() {
       </View>
 
       <View style={styles.body}>
-      {predictionFound ? showPredictionView() : renderCameraView()}
+      {mobilenetModel ? predictionFound ? showPredictionView() : renderCameraView() : <Text style={styles.loading}>Model is still Loading!</Text>}
       </View>
     </View>
   );
@@ -164,18 +169,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
-    paddingTop: 15,
-    backgroundColor: '#E8E8E8',
+    paddingTop: 40,
+    backgroundColor: '#8f74d1',
   },
   header: {
-    backgroundColor: '#41005d',
+    backgroundColor: '#8f74d1',
   },
   title: {
     margin: 10,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#ffffff',
+    color: '#f7f7f8',
   },
   body: {
     padding: 5,
@@ -192,8 +197,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   camera: {
-    width: 700 / 2,
-    height: 800 / 2,
+    width: 700/2 ,
+    height: 800/2 ,
     zIndex: 1,
     borderWidth: 0,
     borderRadius: 0,
@@ -204,7 +209,8 @@ const styles = StyleSheet.create({
     borderColor: '#cccccc',
     borderWidth: 1,
     borderStyle: 'solid',
-    backgroundColor: '#ffffff',
+    // backgroundColor: '#7b2864',
+    backgroundColor: '#e0d9eb',
     marginHorizontal: 20,
     height: 500,
   },
@@ -212,13 +218,14 @@ const styles = StyleSheet.create({
     fontSize: 60,
   },
   wordTextField: {
-    textAlign: 'right',
-    fontSize: 20,
-    marginBottom: 50,
+    textAlign: 'center',
+    fontSize: 22,
+    paddingTop: '60%',
+    color: '#7b2864'
   },
   legendTextField: {
     fontStyle: 'italic',
-    color: '#000000',
+    color: '#000',
     fontSize: 20,
   },
   inputAndroid: {
@@ -233,5 +240,21 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     backgroundColor: '#ffffff',
   },
+  loading: {
+    fontSize: 20, 
+    textAlign: 'center',
+    paddingTop: '55%',
+    color: '#f7f7f8'
+    // textAlignVertical: 'center'
+  },
+  btn : {
+    backgroundColor:'#7b2864',
+    // color: '#7b2864',
+    padding: 10,
+    alignItems: 'center', 
+  },
+  btnText: {
+    color: '#f7f7f8'
+  }
 });
 
